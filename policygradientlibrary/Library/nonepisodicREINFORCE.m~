@@ -1,0 +1,23 @@
+function dJdtheta = nonepisodicREINFORCE(policy, data)
+
+	global N gamma
+   
+    NN = 1;
+    if(policy.type == 3) NN = N; end;
+    
+    dJdtheta = zeros(N+1,1); i=0;
+	for Trials = 1 : max(size(data))   
+      for Steps = 1 : max(size(data(Trials).u))
+         dPi      = DlogPiDTheta(policy, data(Trials).x(1:NN,Steps), data(Trials).u(Steps));
+         rew      = gamma^(Steps-1)*data(Trials).r(Steps);
+         dJdtheta = dJdtheta + dPi * rew;
+         
+         i        = i + 1;
+      end;             
+   end;
+   
+   if(gamma==1)
+      dJdtheta = dJdtheta / i;
+	else      
+      dJdtheta = (1-gamma)*dJdtheta / max(size(data));
+	end;      
